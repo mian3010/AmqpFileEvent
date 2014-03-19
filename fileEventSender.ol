@@ -1,17 +1,23 @@
 include "console.iol"
-include "amqp.iol"
+
+interface AmqpOutputInterface {
+  RequestResponse: send(string)(bool)
+}
 
 outputPort FileUpdatedOutput {
   Location: "amqp://guest:guest@192.168.229.129:5672/fileevent?exchange=fileUpdated"
-  Interface: AmqpOutputInterface
+  Interfaces: AmqpOutputInterface
+  Protocol: sodep
 }
 outputPort FileCreatedOutput {
   Location: "amqp://guest:guest@192.168.229.129:5672/fileevent?exchange=fileCreated"
-  Interface: AmqpOutputInterface
+  Interfaces: AmqpOutputInterface
+  Protocol: sodep
 }
 outputPort FileDeletedOutput {
   Location: "amqp://guest:guest@192.168.229.129:5672/fileevent?exchange=fileDeleted"
-  Interface: AmqpOutputInterface
+  Interfaces: AmqpOutputInterface
+  Protocol: sodep
 }
 
 
