@@ -1,15 +1,14 @@
-include "translationInterface.iol"
+include "console.iol"
 
 execution {concurrent}
     
-inputPort TranslationInput {
-  Location: "socket://localhost:8000"
-  Protocol: http
-  Interfaces: TranslationInterface
+inputPort FileEventListenerInput {
+  Location: "amqp://guest:guest@192.168.229.129:5672/fileevent?queue=fileeventListener"
 }
 
 main {
-  translate(from)(to) {
-    to = from
+  receive(message)(ack) {
+    println@Console(message)()
+    ack = true
   }
 }
