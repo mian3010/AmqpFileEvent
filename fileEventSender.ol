@@ -5,17 +5,17 @@ interface AmqpOutputInterface {
 }
 
 outputPort FileUpdatedOutput {
-  Location: "amqp://guest:guest@192.168.229.200:5672/fileevent?exchange=fileUpdated"
+  Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?exchange=fileUpdated"
   Interfaces: AmqpOutputInterface
   Protocol: sodep
 }
 outputPort FileCreatedOutput {
-  Location: "amqp://guest:guest@192.168.229.200:5672/fileevent?exchange=fileCreated"
+  Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?exchange=fileCreated"
   Interfaces: AmqpOutputInterface
   Protocol: sodep
 }
 outputPort FileDeletedOutput {
-  Location: "amqp://guest:guest@192.168.229.200:5672/fileevent?exchange=fileDeleted"
+  Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?exchange=fileDeleted"
   Interfaces: AmqpOutputInterface
   Protocol: sodep
 }
