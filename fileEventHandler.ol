@@ -14,7 +14,7 @@ inputPort FileEventListenerInput {
 
 main {
   receive(message)(ack) {
-    println@Console(message)()
+    println@Console(message)();
     ack = true
   }
 }
