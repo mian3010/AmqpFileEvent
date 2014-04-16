@@ -1,0 +1,16 @@
+This example requires JOLIE as of SVN revision 1106 (13 January 2010).
+
+Services must be run concurrently in separate shells.
+It is important that:
+- every Station service is already running before Client starts;
+- AdaptationManager is already running before starting the adaptation servers and/or the client.
+
+The following is an example of a correct starting sequence:
+
+jolie AdaptationManager.ol
+jolie TrainStation.ol
+jolie BusStation.ol
+jolie TaxiStation.ol
+jolie server1/AdaptationServer_1.ol
+jolie server2/AdaptationServer_2.ol
+jolie Client.ol

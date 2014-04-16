@@ -1,0 +1,195 @@
+This file contains a brief description on using JORBA. In particular, it explains
+how to handle the development of adaptable applications and adaptation
+servers. We refer to [1] for the underlying theory and a description of the
+overall architecture.
+
+[1]:
+Ivan Lanese, Antonio Bucchiarone, Fabrizio Montesi
+A Framework for Rule-based Dynamic Adaptation - TGC 2010
+
+
+=== List of files
+
+= Middleware files
+
+|
+| AbstractAdaptationServer.iol	: inclusion file needed by adaptation servers
+| AbstractClient.iol			: inclusion file needed by adaptable client applications
+| ActivityManager.iol			: interface file of ActivityManager
+| ActivityManager.ol			: ActivityManager implementation
+| AdaptationServer.iol			: interface file of adaptation servers
+| Matcher.iol					: interface file of match function service
+| Comparator.iol				: interface file of comparators
+| Matcher.ol					: match function implementation
+| State.iol						: interface file of State
+| AbstractRule.iol				: inclusion file needed by rules
+| AUTHORS						: list of authors
+| COPYING						: distribution license
+| State.ol						: State implementation
+| AdaptationManager.iol			: interface file of AdaptationManager
+| HOWTO							: this file
+| Rule.iol						: interface file of rules
+| types.iol						: common message type definitions
+| Activity.iol					: interface file of activities
+| AdaptationManager.ol			: AdaptationManager implementation
+| locations.iol					: public location definitions
+| activities
+|-- AbstractActivity.iol		: inclusion file needed by activities
+
+
+= Travelling scenario files
+
+| README						: travelling scenario execution instructions
+| Client.ol						: travelling scenario client
+| tmp							: client subdirectory for received activities
+| activities					: client subdirectory for initial activities
+|-- GoToMeeting.ol				: GoToMeeting activity implementation
+|-- TakeTrain.ol				: TakeTrain activity implementation
+|-- TakeTrainComparator.ol		: TakeTrain activity comparator implementation
+|-- TakeBus.ol					: TakeBus activity implementation
+|-- TakeBusComparator.ol		: TakeBus activity comparator implementation
+| BusStation.iol				: interface file of BusStation
+| BusStation.ol					: BusStation implementation
+| TaxiStation.iol				: interface file of TaxiStation
+| TaxiStation.ol				: TaxiStation implementation
+| TrainStation.iol				: interface file of TrainStation
+| TrainStation.ol				: TrainStation implementation
+| server1						: adaptation server 1 directory
+|-- AdaptationServer_1.ol		: adaptation server 1 implementation
+|-- rules
+|-- |-- TakeTrainRule.ol		: TakeTrain rule implementation
+|-- |-- TakeTrainRuleCode.ol	: TakeTrain rule activity implementation
+| server2						:
+|-- AdaptationServer_2.ol		: adaptation server 2 implementation
+|-- rules
+|-- |-- TakeTrainRule.ol		: TakeTrain rule implementation
+|-- |-- TakeTrainRuleCode.ol	: TakeTrain rule activity implementation
+|-- |-- TakeBusRule.ol			: TakeBus rule implementation
+|-- |-- TakeTaxiRuleCode.ol		: TakeBus rule activity implementation (which installs TakeTaxi)
+
+
+=== Client applications
+
+A client application is a JOLIE program, and must include the AbstractClient.iol file.
+This file provides for all the infrastructure needed by the client for 
+integrating with the adaptation middleware.
+AbstractClient.iol requires the constant Location_Client to be defined.
+This can be done either by passing it by command line or by setting it
+statically, as done in the example file Client.ol just before the inclusion.
+Location_Client must be a valid location, which will be used by
+AbstractClient to listen for invocations from the adaptation middleware
+later on.
+
+
+= Programming a client
+
+A client is a normal JOLIE service and can use the full set of primitives
+provided by the JOLIE language. When programming a client one can rely on
+the output ports for State and ActivityManager, which have been
+previously set by the included AbstractClient.iol file.
+State must be used for interacting with the global state of
+the client. For this purpose State provides operations get and set, which are
+defined in State.iol. Operation get takes a variable name as a parameter
+and returns the value of that variable. Operation set requires two parameters:
+the name of the variable to assign the value to and the value itself.
+For instance, the following code sets the value of variable i to i + 1:
+
+	get@State( "i" )( i );
+	var = "i"; var.value = i + 1;
+	set@State( var )()
+
+We refer to Client.ol for more examples about using these two operations.
+The global state will be used also by the adaptation middleware
+when needed (i.e. when verifying the applicability conditions of adaptation
+rules). ActivityManager allows for the management of the client activities.
+Available activities can be invoked by using the run operation, which
+simply takes the name of the desired activity as a parameter. For instance,
+the following statement runs activity GoToMeeting:
+
+	run@ActivityManager( "GoToMeeting" )()
+
+The set of available activities is populated during the phase of client startup
+by ActivityManager. The latter scans the client subdirectory "activities"
+for valid activity files (described below) and loads them.
+
+Each client should have its own private directory so to ensure that received
+activity files will not clash (every client will put them in their tmp subdirectory).
+
+
+= Programming client activities
+
+Client activities must be put in the "activities" subdirectory in the client directory.
+To create a new activity, one has to create a new JOLIE file with the name of the activity.
+An activity file must include the AbstractActivity.iol file.
+After that one has simply to implement the onRun procedure, which defines
+the behaviour of the activity. In the coding of an activity, one can
+use services State and ActivityManager as already seen for the
+client application.
+Activities can call other activities, as it is shown in activities/GoToMeeting.ol.
+A more interesting example is activities/TakeTrain.ol, which is responsible
+for buying a train ticket. We use this example for explaining the
+other mechanisms provided for the definition of an activity.
+TakeTrain.ol defines an init procedure, which contains the definition of two
+important data structures: varNames and nfp. They correspond, respectively,
+to the names of the variables that this activity defines as public
+and the Non Functional Properties (NFP) of the activity.
+Public variables declared here must be a subset of the variables managed by
+State, and will be used by the adaptation middleware for checking the applicability
+of the adaptation rules. NFP will be used by the comparator service described below.
+
+An activity should also implement a comparator. The comparator of each activity is 
+a JOLIE file, identified by the concatenation of the activity name with the "Comparator"
+keyword, e.g. the comparator for TakeTrain.ol is TakeTrainComparator.ol.
+A comparator must include the Comparator.iol file and implement a simple service
+offering a compareNFP operation, which is responsible for deciding which one
+of two activities provide the best NFP. For example, in TakeTrainComparator.iol we
+perform a check based upon the cost and the required time of the travel.
+
+
+
+=== Adaptation servers
+
+An adaptation server has to be implemented as a JOLIE file including
+the AbstractAdaptationServer.iol file. As for client applications, the
+included file requires the location constant Location_AdaptationServer to be
+defined in order to know how to expose its input interface.
+An adaptation server containing only the inclusion of AbstractAdaptationServer.iol
+and providing the location definition is already fully functional. Nevertheless, its
+behaviour can be customized if needed.
+
+When a server starts, it scans its "rules" subdirectory. Each file ending with the "Rule.ol"
+suffix is loaded as a rule.
+
+
+= Adaptation rules
+
+An adaptation rule is a JOLIE file that has to include the AbstractRule.iol file.
+An example of this can be found in server1/rules/TakeTrainRule.ol.
+A rule must provide three procedures: dataInit, onGetStateUpdate and onEvaluateConstraint.
+Procedure dataInit must initialize the rule data structure, which must contain:
+	- the name of the activity (activityName);
+	- the filename pointing to the file containing the code of the activity (activityFilename);
+	- the set of names of the variables which are needed to check if this rule
+	can be applied (checkVariableNames);
+	- the set of names of the variables that are needed for the execution of this
+	rule (executionVariableNames);
+	- the flag telling if the rule is compulsory (compulsory);
+	- the nfp properties guaranteed by the activity that this rule would install (nfp).
+Procedure onGetStateUpdate defines the state update that should be performed
+when successfully applying the rule. The state update is represented by variable response.
+Procedure onEvaluateConstraint represents the implementation of the applicability condition
+of the rule, which must set variable response to 1 if the constraint is verified and 0 otherwise.
+
+The code of an activity must be defined in another file. Following the example, the 
+activity related to rule TakeTrainRule.ol is defined in TakeTrainCode.ol.
+The definition of an activity related to a rule is identical to that of a client
+activity described above.
+
+
+
+=== Match function
+
+The adaptation middleware comes equipped with a predefined match function, which simply
+checks if the names of the activities in the client and in the rule coincide.
+More refined matching policies can be defined by modifying the Matcher.ol file, which
+implements the match function in the body of the match operation.
