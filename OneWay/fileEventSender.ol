@@ -22,6 +22,7 @@ outputPort FileDeletedOutput {
 
 
 main {
+
   println@Console("Creating a file.")();
   send@FileCreatedOutput("file.txt")(success);
   println@Console(success)();
