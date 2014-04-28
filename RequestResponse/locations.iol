@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 constants {
-	Location_AdaptationManager = "socket://localhost:9001",
-	Location_TrainStation = "socket://localhost:9010",
-	Location_BusStation = "socket://localhost:9011",
-	Location_TaxiStation = "socket://localhost:9012"
+  Location_AdaptationManager = "amqp://guest:guest@192.168.229.3:5672/jorba?exchange=adaptation&queue=adaptation",
+	Location_TrainStation = "amqp://guest:guest@192.168.229.3:5672/jorba?exchange=train&queue=train",
+	Location_BusStation = "amqp://guest:guest@192.168.229.3:5672/jorba?exchange=bus&queue=bus",
+	Location_TaxiStation = "amqp://guest:guest@192.168.229.3:5672/jorba?exchange=taxi&queue=taxi"
 }
