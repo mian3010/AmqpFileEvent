@@ -32,7 +32,5 @@ main {
 
   println@Console("Deleting the two files.")();
   send@FileDeletedOutput("file.txt");
-<<<<<<< HEAD
-  send@FileDeletedOutput("file2.txt");
   send@FileDeletedOutput("file2.txt")
 }
