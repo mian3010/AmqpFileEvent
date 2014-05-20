@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 constants {
-  Location_AdaptationManager = "amqp://guest:guest@192.168.229.3:5672/jorba?exchange=adaptation&queue=adaptation",
-	Location_TrainStation = "amqp://guest:guest@192.168.229.3:5672/jorba?exchange=train&queue=train",
-	Location_BusStation = "amqp://guest:guest@192.168.229.3:5672/jorba?exchange=bus&queue=bus",
-	Location_TaxiStation = "amqp://guest:guest@192.168.229.3:5672/jorba?exchange=taxi&queue=taxi"
+  Location_AdaptationManager = "amqp://claus:admin@192.168.229.3:5672/jorba?exchange=adaptation&queue=adaptation",
+	Location_TrainStation = "amqp://claus:admin@192.168.229.3:5672/jorba?exchange=train&queue=train",
+	Location_BusStation = "amqp://claus:admin@192.168.229.3:5672/jorba?exchange=bus&queue=bus",
+	Location_TaxiStation = "amqp://claus:admin@192.168.229.3:5672/jorba?exchange=taxi&queue=taxi"
 }

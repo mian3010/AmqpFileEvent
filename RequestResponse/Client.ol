@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 constants {
-	Location_Client = "amqp://guest:guest@192.168.229.3:5672/jorba?exchange=client&queue=client"
+	Location_Client = "amqp://claus:admin@192.168.229.3:5672/jorba?exchange=client&queue=client"
 }
 
 include "AbstractClient.iol"
