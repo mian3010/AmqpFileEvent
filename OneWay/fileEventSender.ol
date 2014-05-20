@@ -1,43 +1,36 @@
 include "console.iol"
 
 interface AmqpOutputInterface {
-  RequestResponse: send(string)(bool)
+  OneWay: send(string)
 }
 
 outputPort FileUpdatedOutput {
   Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?exchange=fileUpdated"
-  Interfaces: AmqpOutputInterface
   Protocol: svdep
+  Interfaces: AmqpOutputInterface
 }
 outputPort FileCreatedOutput {
   Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?exchange=fileCreated"
-  Interfaces: AmqpOutputInterface
   Protocol: svdep
+  Interfaces: AmqpOutputInterface
 }
 outputPort FileDeletedOutput {
   Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?exchange=fileDeleted"
-  Interfaces: AmqpOutputInterface
   Protocol: svdep
+  Interfaces: AmqpOutputInterface
 }
 
-
 main {
-
   println@Console("Creating a file.")();
-  send@FileCreatedOutput("file.txt")(success);
-  println@Console(success)();
+  send@FileCreatedOutput("file.txt");
 
   println@Console("Changing the file.")();
-  send@FileUpdatedOutput("file.txt")(success2);
-  println@Console(success2)();
+  send@FileUpdatedOutput("file.txt");
 
   println@Console("Creating a second file.")();
-  send@FileCreatedOutput("file2.txt")(success3);
-  println@Console(success3)();
+  send@FileCreatedOutput("file2.txt");
 
   println@Console("Deleting the two files.")();
-  send@FileDeletedOutput("file.txt")(success4);
-  println@Console(success4)();
-  send@FileDeletedOutput("file2.txt")(success5);
-  println@Console(success5)()
+  send@FileDeletedOutput("file.txt");
+  send@FileDeletedOutput("file2.txt");
 }

@@ -8,8 +8,8 @@ interface AmqpInputInterface {
 
 inputPort FileEventListenerInput {
   Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?queue=fileeventListener"
-  Interfaces: AmqpInputInterface
   Protocol: svdep
+  Interfaces: AmqpInputInterface
 }
 
 main {
