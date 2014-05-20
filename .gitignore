@@ -39,3 +39,4 @@ tmp
 /JolieAmqpTest/jolie-src/jolie/target/
 /JolieAmqpTest/jolie-src/libjolie/nbproject/
 /JolieAmqpTest/jolie-src/libjolie/target/
+*.log*
