@@ -20,6 +20,6 @@
  ***************************************************************************/
 
 constants {
-	Location_AdaptationServer = "socket://localhost:9102"
+	Location_AdaptationServer = "amqp://claus:admin@192.168.229.3:5672/jorba?exchange=adaptation_2&queue=adaptation_2"
 }
 include "AbstractAdaptationServer.iol"

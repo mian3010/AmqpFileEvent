@@ -5,17 +5,17 @@ interface AmqpOutputInterface {
 }
 
 outputPort FileUpdatedOutput {
-  Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?exchange=fileUpdated"
+  Location: "amqp://claus:admin@192.168.229.3:5672/fileevent?exchange=fileUpdated"
   Protocol: svdep
   Interfaces: AmqpOutputInterface
 }
 outputPort FileCreatedOutput {
-  Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?exchange=fileCreated"
+  Location: "amqp://claus:admin@192.168.229.3:5672/fileevent?exchange=fileCreated"
   Protocol: svdep
   Interfaces: AmqpOutputInterface
 }
 outputPort FileDeletedOutput {
-  Location: "amqp://guest:guest@192.168.229.3:5672/fileevent?exchange=fileDeleted"
+  Location: "amqp://claus:admin@192.168.229.3:5672/fileevent?exchange=fileDeleted"
   Protocol: svdep
   Interfaces: AmqpOutputInterface
 }
@@ -32,5 +32,7 @@ main {
 
   println@Console("Deleting the two files.")();
   send@FileDeletedOutput("file.txt");
+<<<<<<< HEAD
   send@FileDeletedOutput("file2.txt");
+  send@FileDeletedOutput("file2.txt")
 }

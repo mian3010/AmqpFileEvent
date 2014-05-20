@@ -1,0 +1,133 @@
+
+import java.io.*;
+import org.apache.commons.lang3.ArrayUtils;
+
+/**
+ *
+ * @author niels
+ */
+public class JolieSubProcess
+{
+    private static String[] env = new String[] { 
+        "/usr/bin/java", 
+        "-ea:jolie...",
+        "-ea:joliex...",
+        "-Xmx1G",
+        "-Djava.rmi.server.codebase=file:/opt/jolie_d/extensions/rmi.jar",
+        "-cp", "/opt/jolie_d/lib/libjolie.jar:/opt/jolie_d/jolie.jar",
+        "jolie.Jolie"
+    };
+    
+    private String[] args;
+    private Process process;
+
+    public JolieSubProcess(String sourcefile, String[] args)
+    {
+        String[] pargs = sourcefile.split(" ");
+        if(pargs.length > 1) {
+            args = ArrayUtils.addAll(args, pargs);
+        } else {
+            args = ArrayUtils.add(args, sourcefile);
+        }
+        
+        this.args = ArrayUtils.addAll(env, args);
+    }
+
+    public void start() {
+        Runtime r = Runtime.getRuntime();
+        
+        try 
+        {
+            process = r.exec(args);
+        }
+        catch (IOException ex) 
+        {
+            throw new RuntimeException(String.format("jolie.jar could not be found at %s", env[3]), ex);
+        }             
+    }
+    
+    public void stop() {
+        process.destroy();
+    }
+    
+    public int join()
+    {
+        int exitValue = -1;
+        
+        // Wait for process to exit
+        try 
+        {
+            exitValue = process.waitFor();
+        } 
+        catch (InterruptedException ex) 
+        { 
+            throw new RuntimeException("Join was interrupted", ex);
+        }
+        
+        return exitValue;
+    }
+    
+    public String getOutputLine() {
+        DataInputStream in = new DataInputStream(process.getInputStream()); 
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String line;
+        
+        try 
+        {
+            line = br.readLine();
+            if (line == null) throw new IOException("Output from command ended.");
+        }
+        catch (IOException ex)
+        {
+            throw new RuntimeException("Failed to read output of process", ex);
+        }
+        
+        return line;
+    }
+
+    public String getOutput()
+    {
+        DataInputStream in = new DataInputStream(process.getInputStream()); 
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        
+        try 
+        {
+            while((line = br.readLine()) != null)
+            {
+              System.out.println(line);
+                sb.append(line);
+            }
+        }
+        catch (IOException ex)
+        {
+            throw new RuntimeException("Failed to read output of process", ex);
+        }
+        
+        return sb.toString();
+    }
+    
+    public String getErrorStream()
+    {
+        DataInputStream in = new DataInputStream(process.getErrorStream()); 
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        StringBuilder sb = new StringBuilder();
+        String line;
+
+        try
+        {
+            while((line = br.readLine()) != null)
+            {
+              System.out.println(line);
+                sb.append(line);
+            }
+        }
+        catch (IOException ex)
+        {
+            throw new RuntimeException("Process failed and wrapper failed to read ErrorStream", ex);
+        }
+        
+        return sb.toString();
+    }
+}
