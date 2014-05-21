@@ -3,7 +3,7 @@ include "console.iol"
 execution {concurrent}
 
 interface AmqpInputInterface {
-  RequestResponse: receive(string)(bool)
+  OneWay: receive(string)
 }
 
 inputPort FileEventListenerInput {
@@ -13,8 +13,7 @@ inputPort FileEventListenerInput {
 }
 
 main {
-  receive(message)(ack) {
+  receive(message)() {
     println@Console(message)();
-    ack = true
   }
 }
